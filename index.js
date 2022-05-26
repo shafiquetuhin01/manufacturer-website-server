@@ -16,10 +16,18 @@ async function run() {
     try {
       await client.connect();
       const serviceCollection = client.db('bd_tools').collection('tools');
+      const orderCollection = client.db('bd_tools').collection('orders');
         
       app.get('/service', async (req, res) => {
         const query = {};
         const cursor = serviceCollection.find(query);
+        const services = await cursor.toArray();
+        res.send(services);
+      });
+    
+      app.get('/orders', async (req, res) => {
+        const query = {};
+        const cursor = orderCollection.find(query);
         const services = await cursor.toArray();
         res.send(services);
       });
@@ -31,14 +39,14 @@ async function run() {
         res.send(detailService);
       })
 
-      app.post('/service', async (req, res) => {
+      app.post('/orders', async (req, res) => {
         const itemBooking = req.body;
         const query = { name: itemBooking.name, qty: itemBooking.qty, price: itemBooking.price, user: user.email}
-        const exists = await serviceCollection.findOne(query);
+        const exists = await orderCollection.findOne(query);
         if (exists) {
           return res.send({ success: false, itemBooking: exists })
         }
-        const result = await serviceCollection.insertOne(itemBooking);
+        const result = await orderCollection.insertOne(itemBooking);
         sendAppointmentEmail(itemBooking);
         return res.send({ success: true, result });
       });
