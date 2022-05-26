@@ -30,6 +30,18 @@ async function run() {
         const detailService = await serviceCollection.findOne(query);
         res.send(detailService);
       })
+
+      app.post('/service', async (req, res) => {
+        const itemBooking = req.body;
+        const query = { name: itemBooking.name, qty: itemBooking.qty, price: itemBooking.price, user: user.email}
+        const exists = await serviceCollection.findOne(query);
+        if (exists) {
+          return res.send({ success: false, itemBooking: exists })
+        }
+        const result = await serviceCollection.insertOne(itemBooking);
+        sendAppointmentEmail(itemBooking);
+        return res.send({ success: true, result });
+      });
     }
     finally {
   
