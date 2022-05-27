@@ -37,6 +37,12 @@ async function run() {
         const services = await cursor.toArray();
         res.send(services);
       });
+      app.get('/contact', async (req, res) => {
+        const query = {};
+        const cursor = orderCollection.find(query);
+        const services = await cursor.toArray();
+        res.send(services);
+      });
 
       app.get('/service/:purchaseId', async(req, res) =>{
         const id = req.params.purchaseId;
